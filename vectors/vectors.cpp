@@ -21,8 +21,29 @@ class Vector{
         this->data[i]=v.data[i];
       }
     }
+    Vector(const Vector<T>&& other) noexcept  {
+      this->data=other.data;
+      this->capacity=other.capacity;
+      this->size=other.size;
+
+      other.data=nullptr;
+      other.capacity=0;
+      other.size=0;
+    }
     ~Vector(){
       delete[] data;
+    }
+    Vector& operator=(Vector<T>&& other) noexcept {
+      if (this != &other){
+          delete[] this->data;
+          this->data = other.data;
+          this->capacity = other.capacity;
+          this->size = other.size;
+          other.data = nullptr;
+          other.capacity = 0;
+          other.size = 0;
+      }
+      return *this;
     }
     Vector& operator=(const Vector<T>& v){
       if(this!=&v){
@@ -55,21 +76,28 @@ class Vector{
       size++;
     }
     void remove(const T& element){
-      T* new_data = new T[this->capacity];
-      bool removed = false;
-      unsigned int j = 0;
-      for (unsigned int i = 0; i < this->size; i++) {
-        if (!removed && this->data[i] == element) {
-          removed = true;
-          continue;
+      bool removed=false;
+      for(int i=0;i<this->size;i++){
+        if(this->data[i]==element){
+          removed=true;
+          for(int j=i;j<this->size-1;j++){
+            this->data[j]=this->data[j+1];
+          }
         }
-        new_data[j++] = this->data[i];
       }
-      if (removed) {
-        this->size--;
-      }
-      delete[] this->data;
-      this->data = new_data;
+      if(removed) this->size--;
+    }
+    friend bool operator==(const Vector<T>& v1, const Vector<T>& v2){
+      if(v1.size==v2.size){
+        for(int i=0;i<v1.size;i++){
+          if(v1.data[i]!=v2.data[i]) return false;
+        }
+        return true;
+      } 
+      return false;
+    }
+    void pop(){
+      if(this->size>0) this->size--;
     }
     friend std::ostream& operator<<(std::ostream& os, const Vector<T>& v){
       if(!v.size){
@@ -84,9 +112,36 @@ class Vector{
       os<<"]";
       return os;
     }
+    T operator[](int index) const {
+      if(index >= 0 && static_cast<unsigned int>(index) < this->size){
+        return this->data[index];
+      }
+      throw std::out_of_range("Index out of range");
+    }
 };
 
+
+unsigned int binary_search(const std::vector<int>& v,int element){
+  int left=*v.begin();
+  int right=*v.end();
+  int middle;
+  while(left<right){
+    middle=(left+right)/2;
+    if(v.at(middle==element)) return middle;
+  }
+  return -1;
+}
+
+std::vector<int> get_all_primes(){
+
+}
+
+std::vector<int,int> two_sum(){
+  
+}
+
 int main(){
+  //implementation and simple tests.
   Vector<int> test(10);
   Vector<int> copy;
   try{
@@ -103,11 +158,14 @@ int main(){
     std::cout<<copy<<"\n";
     std::cout<<test<<"\n";
     test.remove(909);
+    std::cout<<test<<"\n";
+    std::cout<<(test==copy)<<"\n";
+    test.pop();
     std::cout<<test;
   }catch(const std::exception& e){
     std::cerr << "Exception: " << e.what() << "\n";
   }
-
+  //sample exercises using <vector>
 
 
   return 0;
