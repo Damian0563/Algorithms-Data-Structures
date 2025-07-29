@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <cstring>
+#include <set>
 
 template <typename T>
 class Vector{
@@ -21,7 +24,7 @@ class Vector{
         this->data[i]=v.data[i];
       }
     }
-    Vector(const Vector<T>&& other) noexcept  {
+    Vector(Vector<T>&& other) noexcept  {
       this->data=other.data;
       this->capacity=other.capacity;
       this->size=other.size;
@@ -113,7 +116,7 @@ class Vector{
       return os;
     }
     T operator[](int index) const {
-      if(index >= 0 && static_cast<unsigned int>(index) < this->size){
+      if(index>=0 && index<this->size){
         return this->data[index];
       }
       throw std::out_of_range("Index out of range");
@@ -121,23 +124,69 @@ class Vector{
 };
 
 
-unsigned int binary_search(const std::vector<int>& v,int element){
-  int left=*v.begin();
-  int right=*v.end();
+int binary_search(const std::vector<int>& v,int element){
+  int left=0;
+  int right=v.size()-1;
   int middle;
   while(left<right){
     middle=(left+right)/2;
-    if(v.at(middle==element)) return middle;
+    if(v.at(middle)==element) return middle;
+    else if(v.at(middle)<element){
+      left=middle+1;
+    }else{
+      right=middle-1;     
+    }
   }
   return -1;
 }
 
-std::vector<int> get_all_primes(){
 
+bool check_prime(int number){
+  if(number<2) return false;
+  if(number==2) return true;
+  for(int i=2;i<(number/2)+1;i++){
+    if(number%i==0) return false;
+  }
+  return true;
 }
 
-std::vector<int,int> two_sum(){
-  
+std::vector<int> get_all_primes(const std::vector<int> v){
+  std::vector<int> res={};
+  for(auto& num: v){
+    if(check_prime(num)) res.push_back(num); 
+  }
+  return res;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::vector<int>& v) {
+  os<<"[";
+  for(int i=0;i<v.size();i++){
+    if(i<v.size()-1) os<<v[i]<<",";
+    else os<<v[i];
+  }
+  os<<"]";
+return os;
+}
+
+bool check_presence(const std::vector<std::vector<int>> v, const std::vector<int> pair){
+  for(auto& duo : v){
+    if(duo.at(0)==pair.at(0) && duo.at(1)==pair.at(1)) return true;
+  }
+  return false;
+}
+
+std::vector<std::vector<int>> two_sum(const std::vector<int> v,int sum){
+  std::vector<std::vector<int>> res={};
+  for(int i=0;i<v.size();i++){
+    if(find(v.begin(),v.end(),sum-v[i])!=v.end()){
+      if(v[i]>sum-v[i]){
+        if(!check_presence(res,{v[i],sum-v[i]})) res.push_back({v[i],sum-v[i]});
+      }else{
+        if(!check_presence(res,{sum-v[i],v[i]})) res.push_back({sum-v[i],v[i]});
+      }
+    }
+  }
+  return res;
 }
 
 int main(){
@@ -161,12 +210,21 @@ int main(){
     std::cout<<test<<"\n";
     std::cout<<(test==copy)<<"\n";
     test.pop();
-    std::cout<<test;
+    std::cout<<test<<"\n";
+    std::cout<<test[2]<<"\n";
   }catch(const std::exception& e){
     std::cerr << "Exception: " << e.what() << "\n";
   }
   //sample exercises using <vector>
-
+  std::vector<int> v1={1,3,6,9,10,11,13,21,73};
+  std::vector<int> v2={15,8,16,12,11,13,9,0};
+  std::cout<<"Binary searching v1 for 3: "<<binary_search(v1,3)<<"\n";
+  std::cout<<"Binary searching v1 for 18: "<<binary_search(v1,18)<<"\n";
+  std::cout<<"All primes within v1: "<<get_all_primes(v1)<<"\n";
+  std::cout<<"Two sum for v2-24: "<<"\n";
+  for(std::vector<int> v: two_sum(v2,24)){
+    std::cout<<"\t"<<v<<"\n";
+  }
 
   return 0;
 }
