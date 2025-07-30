@@ -225,6 +225,8 @@ int main(){
   for(std::vector<int> v: two_sum(v2,24)){
     std::cout<<"\t"<<v<<"\n";
   }
+  v2.erase(v2.begin());
+  std::cout<<v2<<"\n";
 
   return 0;
 }
