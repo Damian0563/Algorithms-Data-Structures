@@ -30,14 +30,28 @@ class Singly{
                 src=src->next;
             }
         }
-        Singly(const Singly<T>&& other){
-
+        Singly(Singly<T>&& other)noexcept :head(nullptr){
+            this->head=other.head;
+            other.head=nullptr;
         }
-        Singly& operator=(const Singly<T>&& other){
-
+        Singly& operator=(Singly<T>&& other) noexcept{
+            if(this==&other) return *this;
+            this->clear();
+            this->head=other.head;
+            other.head=nullptr;
+            return *this;
         }
         Singly& operator=(const Singly<T>& list){
-            
+            if(this==&list) return *this;
+            this->clear();
+            Node* temp=list.head;
+            Node** curr=&this->head;
+            while(temp!=nullptr){
+                *curr=new Node{temp->data, nullptr};
+                curr=&((*curr)->next);
+                temp=temp->next;
+            }
+            return *this;
         }
         void push_front(const T data){
             Node* new_node=new Node();
@@ -109,6 +123,7 @@ class Singly{
 int main(){
     try{
         Singly<int> sllist;
+        Singly<int> test;
         sllist.push_front(12);
         Singly<int> cpy(sllist);
         sllist.push_front(12);
@@ -129,6 +144,8 @@ int main(){
         std::cout<<sllist<<"\n";
         sllist.clear();
         std::cout<<sllist<<"\n";
+        test=std::move(sllist);
+        std::cout<<test<<"\n";
     }
     catch(const std::exception& e){
         std::cerr<<"Exception occured: "<<e.what()<<"\n";
