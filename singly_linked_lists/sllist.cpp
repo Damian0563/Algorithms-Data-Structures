@@ -30,6 +30,27 @@ class Singly{
                 src=src->next;
             }
         }
+        Node* begin(){return this->head;}
+        Node* at(int index){
+            Node* temp=this->head;
+            int curr=0;
+            while(temp){
+                if(curr==index){
+                    return temp;
+                }
+                curr++;
+                temp=temp->next;
+            }
+            throw std::out_of_range();
+            return nullptr;
+        }
+        Node* end(){
+            Node* temp=this->head;
+            while(temp->next){
+                temp=temp->next;
+            }
+            return temp;
+        }
         Singly(Singly<T>&& other)noexcept :head(nullptr){
             this->head=other.head;
             other.head=nullptr;
@@ -67,9 +88,9 @@ class Singly{
         }
         void pop_front(){
             if(this->head==nullptr) return;
-            if(this->head->next!=nullptr){
-                this->head=this->head->next;
-            }else this->head=nullptr;
+            Node* temp=this->head;
+            this->head=this->head->next;
+            delete temp;
         }
         void remove(const T element){
             if(this->head==nullptr) return;
@@ -93,7 +114,9 @@ class Singly{
             }
         }
         void insert_after(Node* position,const T element){
-
+            Node* next=position->next ? position->next : nullptr;
+            Node* new_node=new Node{element,next};
+            position->next=new_node;
         }
         void clear(){
             if(this->head==nullptr) return;
@@ -145,7 +168,15 @@ int main(){
         sllist.clear();
         std::cout<<sllist<<"\n";
         test=std::move(sllist);
-        std::cout<<test<<"\n";
+        std::cout<<test<<"\n"<<"\n";
+        Singly<int> llist;
+        llist.push_front(10);
+        llist.push_front(16);
+        llist.push_front(28);
+        llist.push_front(5);
+        std::cout<<llist<<"\n";
+        llist.insert_after(llist.begin(),7);
+        std::cout<<llist<<"\n";
     }
     catch(const std::exception& e){
         std::cerr<<"Exception occured: "<<e.what()<<"\n";
