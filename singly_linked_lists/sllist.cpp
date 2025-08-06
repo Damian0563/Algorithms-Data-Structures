@@ -1,5 +1,6 @@
 #include <forward_list>
 #include <iostream>
+#include <iterator>
 
 template <typename T> 
 class Singly{
@@ -143,6 +144,71 @@ class Singly{
         }
 };
 
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os,const std::forward_list<T> list){
+    bool flag=false;
+    os<<"[";
+    for(auto& itr: list){
+        if(flag) os<<",";
+        flag=true;
+        os<<itr;
+    }
+    os<<"]";
+    return os;
+}
+
+template <typename T>
+std::forward_list<T> merge(std::forward_list<T>& list1,std::forward_list<T>& list2){
+    std::forward_list<T> result;
+    list1.reverse();
+    list2.reverse();
+    while(std::distance(list1.begin(),list1.end())>0 || std::distance(list2.begin(),list2.end())>0){
+        result.push_front(list1.front());
+        result.push_front(list2.front());
+        list1.pop_front();
+        list2.pop_front();
+    }
+    if(std::distance(list2.begin(),list2.end())>0 && std::distance(list1.begin(),list1.end())==0){
+        while(std::distance(list2.begin(),list2.end())>0){
+            result.push_front(list2.front());
+            list2.pop_front();
+        }
+    }else if(std::distance(list2.begin(),list2.end())==0 && std::distance(list1.begin(),list1.end())>0){
+        while(std::distance(list1.begin(),list1.end())>0){
+            result.push_front(list1.front());
+            list1.pop_front();
+        }
+    }
+    return result;
+}
+
+template <typename T>
+void merge_inplace(std::forward_list<T>& list1,std::forward_list<T>& list2){
+    if(list2.empty()) return;
+    if(list1.empty()){
+        list1=std::move(list2);
+        return;
+    }
+    auto it1_before=list1.before_begin();
+    auto it2_before=list2.before_begin();
+    while(std::next(it1_before)!=list1.end() && std::next(it2_before)!=list2.end()){
+        list1.splice_after(it1_before, list2, it2_before);
+        it1_before++;
+        it1_before++;
+    }
+    if(!list2.empty()) list1.splice_after(it1_before, std::move(list2));
+}
+
+void leave_palindromes(std::forward_list<std::string>& list){
+
+}
+
+template <typename T>
+void leave_primes(std::forward_list<T>& list1){
+    
+}
+
 int main(){
     try{
         Singly<int> sllist;
@@ -181,5 +247,33 @@ int main(){
     catch(const std::exception& e){
         std::cerr<<"Exception occured: "<<e.what()<<"\n";
     }
+    //exercises with std::forward_list
+    std::forward_list<std::string> list1;
+    std::forward_list<std::string> list2;
+    list1.push_front("Anna");
+    list1.push_front("Bart");
+    list1.push_front("Jim");
+    list1.push_front("Cook");
+    list2.push_front("Shawn");
+    list2.push_front("Jambo");
+    list2.push_front("Shawn");
+    list2.push_front("Jill");
+    std::cout<<list1<<"\n";
+    std::cout<<list2<<"\n";
+    std::forward_list<std::string> list4;
+    list4.push_front("Anna");
+    list4.push_front("Bart");
+    list4.push_front("Jim");
+    list4.push_front("Cook");
+    std::forward_list<std::string> list5;
+    list5.push_front("Shawn");
+    list5.push_front("Jambo");
+    list5.push_front("Shawn");
+    list5.push_front("Jill");
+    std::forward_list<std::string> list3=merge(list1,list2);
+    merge_inplace(list4,list5);
+    std::cout<<list3<<"\n";
+    std::cout<<list4<<"\n";
+
     return 1;
 }
