@@ -1,5 +1,6 @@
 #include <forward_list>
 #include <iostream>
+#include <algorithm>
 #include <iterator>
 
 template <typename T> 
@@ -195,18 +196,28 @@ void merge_inplace(std::forward_list<T>& list1,std::forward_list<T>& list2){
     while(std::next(it1_before)!=list1.end() && std::next(it2_before)!=list2.end()){
         list1.splice_after(it1_before, list2, it2_before);
         it1_before++;
-        it1_before++;
     }
     if(!list2.empty()) list1.splice_after(it1_before, std::move(list2));
 }
 
-void leave_palindromes(std::forward_list<std::string>& list){
-
+bool check_palindrome(const std::string& word){
+    std::string reversed_word=word;
+    std::reverse(reversed_word.begin(), reversed_word.end());
+    // std::cout<<word<<" "<<reversed_word<<"\n";
+    return word==reversed_word;
 }
 
-template <typename T>
-void leave_primes(std::forward_list<T>& list1){
-    
+
+void leave_palindromes(std::forward_list<std::string>& list){
+    auto itr=list.before_begin();
+    while(std::next(itr)!=list.end()){
+        auto current_element_itr=std::next(itr);
+        if(!check_palindrome(*current_element_itr)) itr=list.erase_after(itr);
+        else itr++;
+    }
+    for(auto& itr: list){
+        if(!check_palindrome(itr)) leave_palindromes(list); 
+    }
 }
 
 int main(){
@@ -274,6 +285,10 @@ int main(){
     merge_inplace(list4,list5);
     std::cout<<list3<<"\n";
     std::cout<<list4<<"\n";
+    std::forward_list<std::string> palindromes={"bob","samantha","Bob","mum","jasmine","a"};
+    std::cout<<palindromes<<"\n";
+    leave_palindromes(palindromes);
+    std::cout<<palindromes<<"\n";
 
     return 1;
 }
