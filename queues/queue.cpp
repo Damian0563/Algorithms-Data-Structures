@@ -16,8 +16,8 @@ class Queue{
     public:
         Queue():head(nullptr), tail(nullptr), current_size(0) {};
         unsigned int size()const {return this->current_size;}
-        T front() const{return this->head?this->head->data;throw std::out_of_range("no front element in empty queue.");}
-        T back() const{return this->tail?this->tail->data;throw std::out_of_range("no back element in empty queue.");}
+        T front() const{return this->head?this->head->data:throw std::out_of_range("no front element in empty queue.");}
+        T back() const{return this->tail?this->tail->data:throw std::out_of_range("no back element in empty queue.");}
         T pop(){
             if(!this->isEmpty()){
                 Node<T>* first=this->head;
@@ -58,6 +58,43 @@ class Queue{
             os<<"]";
             return os;
         }
+        Queue<T> reverse(){
+            Node<T>* prev=nullptr;
+            Node<T>* current=this->head;
+            Node<T>* next=nullptr;
+            this->tail=this->head;
+            while(current!=nullptr) {
+                next=current->next;
+                current->next=prev;
+                prev=current;
+                current=next;
+            }
+            this->head=prev;
+            return *this;
+        } 
+        Queue(const Queue<T>& queue){
+            this->head=nullptr;
+            this->tail=nullptr;
+            this->current_size=queue.size();
+            Node<T>* curr=queue.head;
+            while(curr){
+                Node<T>* newNode = new Node<T>{curr->data, nullptr};
+                if(!this->head){
+                    this->head = newNode;
+                    this->tail = newNode;
+                }else{
+                    this->tail->next=newNode;
+                    this->tail=newNode;
+                }
+                curr=curr->next;
+            }
+        }
+        Queue(const Queue<T>&& queue){
+
+        }
+        Queue& operator=(const Queue<T>&& queue){
+
+        }
 };
 
 int main(){
@@ -65,10 +102,15 @@ int main(){
     std::cout<<q<<"\n";
     q.push_back(10);
     q.push_back(99);
+    q.push_back(49);
     q.push_back(21);
     std::cout<<q<<"\n";
     int popped=q.pop();
-    std::cout<<"Popped: "<<popped<<"\t"<<"from "<<q<<"\n"; 
+    std::cout<<"Popped: "<<popped<<"\t"<<"from "<<q<<"\n";
+    std::cout<<q.reverse()<<"\n";
+    Queue<int> cpy(q);
+    std::cout<<cpy<<"\n";
+
 
     return 1;
 }
