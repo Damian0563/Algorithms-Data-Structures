@@ -15,6 +15,7 @@ class Queue{
         unsigned int current_size;
     public:
         Queue():head(nullptr), tail(nullptr), current_size(0) {};
+        ~Queue(){this->clear();}
         unsigned int size()const {return this->current_size;}
         T front() const{return this->head?this->head->data:throw std::out_of_range("no front element in empty queue.");}
         T back() const{return this->tail?this->tail->data:throw std::out_of_range("no back element in empty queue.");}
@@ -89,13 +90,45 @@ class Queue{
                 curr=curr->next;
             }
         }
-        Queue(const Queue<T>&& queue){
-
+        Queue(Queue<T>&& queue){
+            this->current_size=queue.size();
+            this->head=queue.head;
+            this->tail=queue.tail;
+            queue.head=nullptr;
+            queue.tail=nullptr;
+            queue.current_size=0;
         }
-        Queue& operator=(const Queue<T>&& queue){
-
+        void clear(){
+            Node<T>* curr=this->head;
+            Node<T>* temp=nullptr;
+            while(curr){
+                temp=curr;
+                curr=curr->next;
+                delete temp;
+            }
+            this->current_size=0;
+            this->head=nullptr;
+            this->tail=nullptr;
+        }
+        Queue& operator=(Queue<T>&& queue){
+            if(*this==&queue) return this;
+            this->clear();
+            this->current_size=queue.size();
+            this->head=queue.head;
+            this->tail=queue.tail;
+            queue.head=nullptr;
+            queue.tail=nullptr;
+            queue.current_size=0;
+            return this;
         }
 };
+
+template <typename T>
+class PriorityQueue:private Queue<T>{
+
+};
+
+
 
 int main(){
     Queue<int> q;
@@ -110,7 +143,8 @@ int main(){
     std::cout<<q.reverse()<<"\n";
     Queue<int> cpy(q);
     std::cout<<cpy<<"\n";
-
+    Queue<int> mo=std::move(q);
+    std::cout<<mo<<" "<<q<<"\n";
 
     return 1;
 }
