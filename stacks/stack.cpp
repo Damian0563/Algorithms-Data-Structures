@@ -14,8 +14,26 @@ class Stack{
         unsigned int len;
     public:
         Stack():head(nullptr),len(0){}
-        Stack(const Stack<T>& other){}
-        Stack(const Stack<T>&& other){}
+        Stack(const Stack<T>& other){
+            this->head=nullptr;
+            this->len=other.size();
+            if(!other.head) return;
+            Node<T>* temp=other.head;
+            Node<T>* last=nullptr;
+            while(temp){
+                Node<T>* new_node=new Node<T>{temp->data};
+                if(!this->head) this->head=new_node;
+                else last->next=new_node;
+                last=new_node;
+                temp=temp->next;
+            }
+        }
+        Stack(Stack<T>&& other){
+            this->head=other.head;
+            this->len=other.size();
+            other.head=nullptr;
+            other.len=0;
+        }
         ~Stack(){this->clear();}
         void clear(){
             Node<T>* temp=this->head;
@@ -57,8 +75,30 @@ class Stack{
             os<<"]";
             return os;
         }
-        Stack& operator=(Stack<T>&& other){}
-        Stack& operator=(const Stack<T>& other){}
+        Stack& operator=(Stack<T>&& other){
+            if(*this==&other) return;
+            this->head=other.head;
+            this->len=other.size();
+            other.head=nullptr;
+            other.len=0;
+            return *this;
+        }
+        Stack& operator=(const Stack<T>& other){
+            if(*this==&other) return;
+            this->clear();
+            this->len=other.size();
+            if(!other.head) return;
+            Node<T>* temp=other.head;
+            Node<T>* last=nullptr;
+            while(temp){
+                Node<T>* new_node=new Node<T>{temp->data};
+                if(!this->head) this->head=new_node;
+                else last->next=new_node;
+                last=new_node;
+                temp=temp->next;
+            }
+            return *this;
+        }
 };
 
 int main(){
@@ -75,6 +115,17 @@ int main(){
     my_stack.clear();
     std::cout<<my_stack<<"\n";
     std::cout<<"Size: "<<my_stack.size()<<" isEmpty: "<<my_stack.isEmpty()<<"\n";
+    Stack<std::string> test;
+    test.push("Burger");
+    test.push("Pizza");
+    test.push("French fries");
+    std::cout<<"test stack "<<test<<"\n";
+    Stack<std::string> my_new_stack(test);
+    std::cout<<"copy stack "<<my_new_stack<<"\n";
+    test.push("Mayonaisse");
+    std::cout<<test<<" "<<my_new_stack<<"\n";
+    Stack<std::string> moved(std::move(test));
+    std::cout<<"Moved: "<<moved<<" Test: "<<test<<"\n";
 
     return 1;
 }
