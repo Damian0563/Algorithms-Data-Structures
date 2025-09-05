@@ -16,9 +16,38 @@ class Ring{
                 for(int i=0;i<this->m_size;i++) this->m_data[i]=default_val;
             }else throw std::out_of_range("Invalid ring size initialization");
         }
-        Ring(const Ring<T>& r){}
-        Ring(const Ring<T>&& other){};
-        Ring& operator=(const Ring<T> other){};
+        Ring(const Ring<T>& r){
+            this->m_size=r.m_size;
+            this->m_pos=r.m_pos;
+            this->m_data=new T[r.m_size];
+            for(int i=0;i<r.m_size;i++){
+                this->m_data[i]=r.m_data[i];
+            }
+        }
+        Ring(Ring<T>&& r){
+            this->m_size=r.m_size;
+            this->m_pos=r.m_pos;
+            this->m_data=new T[r.m_size];
+            for(int i=0;i<r.m_size;i++){
+                this->m_data[i]=r.m_data[i];
+            }
+            r.m_size=0;
+            r.m_pos=0;
+            delete[] r.m_data;
+        }
+        Ring& operator=(Ring<T> r){
+            if(*this==&r) return *this;
+            this->m_size=r.m_size;
+            this->m_pos=r.m_pos;
+            this->m_data=new T[r.m_size];
+            for(int i=0;i<r.m_size;i++){
+                this->m_data[i]=r.m_data[i];
+            }
+            r.m_size=0;
+            r.m_pos=0;
+            delete[] r.m_data;
+            return *this;
+        }
         ~Ring(){
             delete[] this->m_data;
             this->m_size=0;
@@ -79,4 +108,10 @@ int main(){
     std::cout<<"After removal: "<<ring<<"\n";
     ring.remove();
     std::cout<<"After yet another removal: "<<ring<<"\n";
+    Ring<char> copyRing(ring);
+    std::cout<<"Copy constructed ring: "<<copyRing<<"\n";
+    Ring<char> movRing(std::move(ring));
+    std::cout<<"Ring move-constructed: "<<movRing<<" , Initial ring: "<<ring<<"\n";
+    Ring<char> newRing=std::move(movRing);
+    std::cout<<"Standard std::move on the previous ring: "<<newRing<<"\n";
 }

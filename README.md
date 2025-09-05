@@ -7,9 +7,10 @@ The following Data Structures are implemented:
 - Singly linked lists
 - Queue & Priority Queue
 - Doubly linked lists (To be implemenetd)
-- Stacks (To be implemenetd)
+- Stacks
 - Rings (To be implemenetd)
 - Binary Trees (To be implemenetd)
 - Graphs (To be implemenetd)
 
-### Covered problems
+The following Algorithms are implemented:
+-
