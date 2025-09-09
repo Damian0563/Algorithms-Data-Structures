@@ -32,14 +32,80 @@ class Dllist{
             this->head=list.head;
             list.head=nullptr;
         }
-        void remove(){
+        int size() noexcept{
+            if(!this->head) return 0;
+            Node<T>* temp=this->head;
+            int size=0;
+            while(temp){
+                size++;
+                temp=temp->next;
+            }
+            return size;
+        }
+        void remove(int index){
+            index--;
+            if(index>this->size()) return;
+            if(index+1==this->size()-1){ 
+                this->pop();
+                return;
+            }
+            int counter=0;
+            Node<T>* curr=this->head;
+            while(counter!=index){
+                counter++;
+                curr=curr->next;
+            }
+            Node<T>* temp=curr->next;
+            curr->next=temp->next;
+            temp->next->prev=curr;
+            delete temp;
+        }   
+        void insert(int index,const T element){
+            index--;
+            if(index>this->size()) return;
+            if(index+1==this->size()){
+                push(element);
+                return;
+            }
+            Node<T>* new_node=new Node<T>{element,nullptr,nullptr};
+            Node<T>* curr=this->head;
+            int counter=0;
+            while(counter!=index){
+                counter++;
+                curr=curr->next;
+            }
+            new_node->next=curr->next;
+            new_node->prev=curr;
+            curr->next=new_node;
 
         }
-        void insert(){
-
+        T at(const int index){
+            if(index>=this->size() || index<0) throw std::out_of_range("invalid index for 'at' funnction.");
+            int counter=0;
+            Node<T>* curr=this->head;
+            while(counter!=index){
+                counter++;
+                curr=curr->next;
+            }   
+            return curr->data;
+        }
+        void pop(){
+            if(!this->head) return;
+            if(!this->head->next){
+                delete this->head;
+                this->head=nullptr;
+                return;
+            }
+            Node<T>* temp=this->head;
+            while(temp->next->next){
+                temp=temp->next;
+            }
+            delete temp->next;
+            temp->next=nullptr;
         }
         Dllist& operator=(const Dllist<T>&& list){
-            if(*this==&list) return *this;
+            if(this==&list) return *this;
+            this->clear();
             this->head=list.head;
             list.head=nullptr;
             return *this;
@@ -94,6 +160,17 @@ int main(){
     std::cout<<mov<<"  "<<dlist<<"\n";
     Dllist<int> movOp=std::move(mov);
     std::cout<<movOp<<"  "<<mov<<"\n";
+    movOp.pop();
+    std::cout<<movOp<<"  "<<movOp.size()<<"\n";
+    movOp.push(77);
+    movOp.push(120);
+    movOp.push(6);
+    std::cout<<movOp<<"\n";
+    movOp.remove(3);
+    std::cout<<movOp<<"\n";
+    movOp.insert(3,44);
+    std::cout<<movOp<<"\n";
+    std::cout<<"At index 2: "<<movOp.at(2)<<std::endl;
 
     return 1;
 }
