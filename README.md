@@ -6,10 +6,10 @@ The following Data Structures are implemented:
 - Vectors
 - Singly linked lists
 - Queue & Priority Queue
-- Doubly linked lists (To be implemenetd)
+- Doubly linked lists
 - Stacks
-- Rings (To be implemenetd)
-- Binary Trees (To be implemenetd)
+- Rings 
+- Binary Trees
 - Graphs (To be implemenetd)
 
 The following Algorithms are implemented:
