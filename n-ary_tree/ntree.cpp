@@ -22,7 +22,13 @@ class NaryTree{
             }
             delete node;
         }
-        void clear() noexcept{this->clear_rec(this->root);}
+        void clear() noexcept{this->clear_rec(this->root);this->root=nullptr;}
+        Node<T>* copy_rec(Node<T>* node) {
+            if(!node) return nullptr;
+            Node<T>* new_node=new Node<T>(node->data);
+            for(int i=0;i<N;i++) new_node->mem_map[i]=copy_rec(node->mem_map[i]);
+            return new_node;
+        }
         void add(Node<T>* node, const T element){
             if(!node) return;
             std::queue<Node<T>*> q;
@@ -65,9 +71,19 @@ class NaryTree{
     public:
         NaryTree():root(nullptr){}
         ~NaryTree(){this->clear();}
-        NaryTree(const Node<T>& other){}
-        NaryTree(Node<T>&& other){}
-        NaryTree& operator=(const Node<T>& other){}
+        NaryTree(const NaryTree<T>& other){
+            this->root=copy_rec(other.root);
+        }
+        NaryTree(NaryTree<T>&& other){
+            this->root=other.root;
+            other.root=nullptr;
+        }
+        NaryTree& operator=(const NaryTree<T>& other){
+            if(this==&other) return *this;
+            this->clear();
+            this->root=copy_rec(other.root);
+            return *this;
+        }
         void preorder_traversal()const noexcept{this->preorder(this->root);}
         void inorder_traversal()const noexcept{this->inorder(this->root);}
         void postorder_traversal()const noexcept{this->postorder(this->root);}
@@ -98,10 +114,16 @@ int main(){
     tree.insert(7);
     tree.insert(8); 
     //HELPER 1
-    std::cout<<tree<<"\n";
+    std::cout<<tree<<"\n"; //preorder traversal operator<<
     tree.preorder_traversal(); std::cout<<"\n";
     tree.inorder_traversal(); std::cout<<"\n";
     tree.postorder_traversal(); std::cout<<"\n";
+    std::cout<<"\n";
+    NaryTree<int> cpy(tree);
+    NaryTree<int> dp=std::move(tree);
+    std::cout<<cpy<<"\n";
+    std::cout<<dp<<"\n";
+    std::cout<<tree<<"\n";
 
     return 1;
 }
