@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <unordered_set>
 #include <map>
 #include <queue>
 
@@ -14,6 +15,16 @@ template <typename T>
 class Graph{
     private:
         Vertex<T>* head;
+
+        void clearRec(Vertex<T>* node,std::unordered_set<Vertex<T>*>& visited){
+            if(!node || visited.count(node)) return;
+            visited.insert(node);
+            for(auto& itr : node->edges){
+                clearRec(itr, visited);
+            }
+            //std::cout<<"Deleting node: "<< node->data<<"\n";
+            delete node;
+        }
     public:
         Graph():head(nullptr){}
         Graph(const T data){
@@ -28,13 +39,13 @@ class Graph{
             std::queue<Vertex<T>*> q;
             std::map<T, bool> visited;
             q.push(graph.head);
-            visited[graph.head->data] = true;
+            visited[graph.head->data]=true;
             while (!q.empty()) {
                 Vertex<T>* node=q.front();
                 q.pop();
                 os<<node->data<<": ";
                 for(auto& vptr : node->edges){
-                    os<<vptr->data<<" ";
+                    os<<"\""<<vptr->data<<"\" ";
                     if(!visited[vptr->data]){
                         visited[vptr->data]=true;
                         q.push(vptr);
@@ -45,24 +56,34 @@ class Graph{
             return os;
         }
         ~Graph(){this->clear();}
-        void clear(){}
+        void clear(){
+            std::unordered_set<Vertex<T>*> visited;
+            this->clearRec(this->head,visited);
+            this->head=nullptr;
+        }
         void insert(const T element,Vertex<T>* vertex){   
             if(!vertex) return;
             if(!this->search(element)){
                 Vertex<T>* new_node=new Vertex<T>{element};
                 vertex->edges.push_back(new_node);
+                new_node->edges.push_back(vertex);
             }
         }
         inline Vertex<T>* get_head()const noexcept{return this->head;}
         Vertex<T>* search(T data)const noexcept{
             if(!this->head) return nullptr;
             std::queue<Vertex<T>*> q;
+            std::map<T, bool> visited;
             q.push(this->head);
+            visited[head->data]=true;
             while(!q.empty()){
                 Vertex<T>* node=q.front();
-                if (node->data == data) return node;
+                if(node->data==data) return node;
                 for(auto&itr : node->edges){
-                    q.push(itr);
+                    if(!visited[itr->data]){
+                        q.push(itr);
+                        visited[itr->data]=true;
+                    }
                 }
                 q.pop();
             }
