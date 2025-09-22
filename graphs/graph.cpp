@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_set>
 #include <map>
+#include <unordered_map>
 #include <queue>
 
 template <typename T>
@@ -16,6 +17,27 @@ class Graph{
     private:
         Vertex<T>* head;
 
+        void recreate(Vertex<T>* node){
+            if(!node) return;
+            std::unordered_map<Vertex<T>*, Vertex<T>*> oldToNew;
+            std::queue<Vertex<T>*> q;
+            q.push(node);
+            Vertex<T>* newHead=new Vertex<T>(node->data);
+            oldToNew[node]=newHead;
+            this->head=newHead;
+            while(!q.empty()) {
+                Vertex<T>* curr=q.front();
+                q.pop();
+                Vertex<T>* currClone=oldToNew[curr];
+                for(auto& neighbor : curr->edges){
+                    if(oldToNew.find(neighbor)==oldToNew.end()) {
+                        oldToNew[neighbor]=new Vertex<T>(neighbor->data);
+                        q.push(neighbor);
+                    }
+                    currClone->edges.push_back(oldToNew[neighbor]);
+                }
+            }
+        }
         void clearRec(Vertex<T>* node,std::unordered_set<Vertex<T>*>& visited){
             if(!node || visited.count(node)) return;
             visited.insert(node);
@@ -31,9 +53,17 @@ class Graph{
             Vertex<T>* new_node=new Vertex<T>{data};
             this->head=new_node;
         }
-        Graph(const Graph<T>& other){}
-        Graph(Graph<T>&& other){}
-        Graph& operator=(const Graph<T>& other){}
+        Graph(const Graph<T>& other){this->recreate(other.head);}
+        Graph(Graph<T>&& other){
+            this->head=other.head;
+            other.head=nullptr;
+        }
+        Graph& operator=(const Graph<T>& other){
+            if(this==&other) return *this;
+            this->clear();
+            this->recreate(other.head);
+            return this;
+        }
         friend std::ostream& operator<<(std::ostream& os,const Graph<T>& graph){
             if (!graph.head) return os;
             std::queue<Vertex<T>*> q;

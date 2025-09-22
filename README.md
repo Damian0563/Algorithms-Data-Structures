@@ -10,7 +10,9 @@ The following Data Structures are implemented:
 - Stacks
 - Rings 
 - Binary Trees
-- Graphs (To be implemenetd)
+- Graphs
 
 The following Algorithms are implemented:
--
+* Sorting
+    - insertion sort
+    - bubble sort
