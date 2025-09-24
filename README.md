@@ -16,3 +16,6 @@ The following Algorithms are implemented:
 * Sorting
     - insertion sort
     - bubble sort
+    - selection sort
+    - merge sort
+    - quick sort
