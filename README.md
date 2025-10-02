@@ -19,3 +19,8 @@ The following Algorithms are implemented:
     - selection sort
     - merge sort
     - quick sort
+    - heap sort
+    - radix sort
+    - shell sort
+* Searching
+    -
