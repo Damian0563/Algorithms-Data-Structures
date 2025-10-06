@@ -23,4 +23,5 @@ The following Algorithms are implemented:
     - radix sort
     - shell sort
 * Searching
-    -
+    - binary search
+    - interpolation search
