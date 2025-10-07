@@ -25,3 +25,4 @@ The following Algorithms are implemented:
 * Searching
     - binary search
     - interpolation search
+    - fibbonacci search
